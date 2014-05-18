@@ -31,3 +31,8 @@ create more Threads, resulting in a more controlled server.
 
 Alternatively, the JVM running the software can be restricted on its own.
 
+
+Links to good resources for further development
+-----------------------------------------------
+ * [Hypertext Transfer Protocol -- HTTP/1.1 Specification](http://www.w3.org/Protocols/rfc2616/rfc2616.html)
+
