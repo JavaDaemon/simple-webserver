@@ -39,6 +39,9 @@ public class ThreadPooledWebserver implements Runnable {
                 throw new RuntimeException(
                     "Error accepting client connection", e);
             }
+            /*
+             * This is not even a remotely nice or dependant solution. Sorry. 
+             */
             byte[] requestArray = new byte[256];
             try {
             	for (int i = 0; i < 256; i++) {
