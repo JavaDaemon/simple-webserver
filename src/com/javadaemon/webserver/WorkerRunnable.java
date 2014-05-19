@@ -24,18 +24,56 @@ public class WorkerRunnable implements Runnable {
 			InputStream input = clientSocket.getInputStream();
 			OutputStream output = clientSocket.getOutputStream();
 			
+			/*
+			 * FIXME: Instead of doing this, read the entire request.
+			 */
 			byte[] method = new byte[8];
 			for (int i = 0; i < method.length; i++) {
 				int data = input.read();
-				if (data == 32) { // Space signifies that method-field has ended
+				if (data == 32) { // Space signifies that the method-field has ended
 					break;
 				}
-				method[i] = (byte)(0xFFFF ^ data);
+				method[i] = (byte)(0xFF & data);
 			}
 			String methodString = new String(method, "US-ASCII");
-			/*
-			 * 
-			 */
+			switch (methodString.trim()) {
+			case "GET":
+				handleGet();
+				break;
+			case "POST":
+			case "OPTIONS":
+			case "HEAD":
+			case "PUT":
+			case "DELETE":
+			case "CONNECT":
+			case "TRACE":
+			default:
+				handleDefault();
+				break;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Called upon a GET request
+	 */
+	private void handleGet() {
+		System.out.println("GET RECEVIED!");
+		closeConnection();
+	}
+	
+	/**
+	 * Called when no known method was requested
+	 */
+	private void handleDefault() {
+		closeConnection();
+	}
+	
+	private void closeConnection() {
+		try {
+			clientSocket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

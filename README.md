@@ -12,8 +12,17 @@ should be easy to get started, and get going.
 
 What's missing?
 ---------------
- * Proper request method acting.
- * Nice headers in responses.
+ * GET-handling.
+ * POST-handling.
+ * OPTIONS-handling.
+ * HEAD-handling.
+ * PUT-handling.
+ * DELETE-handling.
+ * TRACE-handling.
+ * CONNECT-handling.
+ * Response headers.
+ * Request headers.
+ * Persistent connections.
 
 About resource consumption
 --------------------------
@@ -24,7 +33,7 @@ If the pool contains no Threads but it is needed, a new Thread will be added to 
 This solution allows the server to scale, as traffic increases. However, it will hog as many resources as it can come near.
 
 A different approach is using the ExecutorService "fixedThreadPool", while specifying the max amount of Threads wanted. 
-As trafic increases, so will be servers respond-time. It will however still handle client asynchronously, but with this solution it will not 
+As traffic increases, so will be servers respond-time. It will however still handle client asynchronously, but with this solution it will not 
 create more Threads, resulting in a more controlled server. 
 
 Alternatively, the JVM running the software can be restricted on its own.

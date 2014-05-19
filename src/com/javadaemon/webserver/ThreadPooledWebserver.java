@@ -6,6 +6,12 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * A threadpooled webserver, listenening for connections as much as possible.
+ * Whenever a connection is made, it is quickly handed off to the threadpool.
+ * 
+ * @author Mads Peter Horndrup
+ */
 public class ThreadPooledWebserver implements Runnable {
 	
 	protected int serverPort;
