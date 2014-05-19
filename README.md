@@ -9,13 +9,11 @@ It is intended to show by example how a webserver can function, when written in 
 
 The project features the very foundation of a proper webserver, and thus it
 should be easy to get started, and get going. 
-Out of the box, it only responds to GET-requests, and it only serves a picture of a banana while doing so.
-
 
 What's missing?
 ---------------
- * Proper request method acting. Currently, it finds out what request is being made, and a RequestHandler is chosen.
- * Nice headers. Currently, these are implemented in the RequestHandlers, but I suspect this is not the way to go.
+ * Proper request method acting.
+ * Nice headers in responses.
 
 About resource consumption
 --------------------------
@@ -30,7 +28,6 @@ As trafic increases, so will be servers respond-time. It will however still hand
 create more Threads, resulting in a more controlled server. 
 
 Alternatively, the JVM running the software can be restricted on its own.
-
 
 Links to good resources for further development
 -----------------------------------------------
