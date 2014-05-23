@@ -24,55 +24,31 @@ public class WorkerRunnable implements Runnable {
 			InputStream input = clientSocket.getInputStream();
 			OutputStream output = clientSocket.getOutputStream();
 			
-			/*
-			 * FIXME: Instead of doing this, read the entire request.
-			 */
-			byte[] method = new byte[8];
-			for (int i = 0; i < method.length; i++) {
-				int data = input.read();
-				if (data == 32) { // Space signifies that the method-field has ended
+			byte[] requestData = new byte[8192];
+			for (int i = 0; i < 8192; i++) {
+				int inByte = input.read();
+				if (inByte == 10) { // LF (ASCII = 10) signifies end of request-line.
 					break;
 				}
-				method[i] = (byte)(0xFF & data);
+				if (inByte == -1) { // End of stream.
+					/*
+					 * TODO: Error handling for wrong request, since there was not LF.
+					 */
+					break;
+				}
+				requestData[i] = (byte) (inByte & 0xFF);
 			}
-			String methodString = new String(method, "US-ASCII");
-			switch (methodString.trim()) {
-			case "GET":
-				handleGet();
-				break;
-			case "POST":
-			case "OPTIONS":
-			case "HEAD":
-			case "PUT":
-			case "DELETE":
-			case "CONNECT":
-			case "TRACE":
-			default:
-				handleDefault();
-				break;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Called upon a GET request
-	 */
-	private void handleGet() {
-		System.out.println("GET RECEVIED!");
-		closeConnection();
-	}
-	
-	/**
-	 * Called when no known method was requested
-	 */
-	private void handleDefault() {
-		closeConnection();
-	}
-	
-	private void closeConnection() {
-		try {
+			// InputStream is now at headers.
+			
+			// TODO: Check if this is throwing an error. It really might.
+			RequestLine request = ServerUtil.parseRequest(requestData);
+			
+			/*
+			 * Here, a response could be sent through the OutputStream.
+			 */
+			
+			input.close();
+			output.close();
 			clientSocket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
