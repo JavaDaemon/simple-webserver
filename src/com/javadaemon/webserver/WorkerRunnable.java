@@ -1,9 +1,9 @@
 package com.javadaemon.webserver;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -64,12 +64,13 @@ public class WorkerRunnable implements Runnable {
 				output.flush();
 				/*
 				 * XXX: DataInputStream is really slow without a BufferedInputStream in the middle.
+				 * Actually, it's really darn slow anyway.
 				 */
-				DataInputStream dataStream = new DataInputStream(new FileInputStream(request.getURI()));
+				DataInputStream dataStream = new DataInputStream(new BufferedInputStream(new FileInputStream(request.getURI()), 2048));
 				for (int i = 0; i < request.getURI().length(); i++) {
 					output.write(dataStream.readByte());
-					output.flush();
 				}
+				output.flush();
 				dataStream.close();
 			}
 			closeConnection();
@@ -85,7 +86,7 @@ public class WorkerRunnable implements Runnable {
 			clientSocket.close();
 		} catch (IOException e) {
 			/*
-			 * Flushing failed. Oh well.
+			 * Flushing failed. Oh well. The stream should be all flushed before it's closed anyway.
 			 */
 		}
 	}

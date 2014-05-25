@@ -19,9 +19,18 @@ What's missing?
  * DELETE-handling.
  * TRACE-handling.
  * CONNECT-handling.
- * Response headers.
- * Request headers.
+ * Status-Line for most responses.
+ * Most response headers.
+ * Interpretation of request headers.
  * Persistent connections.
+ * Logging.
+ 
+What's working?
+---------------
+ * GET-requests are answered to. Root is /site/.
+ * The server either responds with 200 OK, or closes the connection.
+ * The server handles multiple connections well.
+ * Responses contain the Content-Length header.
 
 About resource consumption
 --------------------------
