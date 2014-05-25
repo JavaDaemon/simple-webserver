@@ -3,7 +3,6 @@ package com.javadaemon.webserver;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -49,29 +48,20 @@ public class WorkerRunnable implements Runnable {
 			RequestLine request;
 			try {
 				request = ServerUtil.parseRequest(requestData);
-			} catch (FileNotFoundException e) {
-				closeConnection();
-				return;
 			} catch (IllegalArgumentException e) {
 				closeConnection();
 				return;
 			}
 			
-			if (request.getMethod() == METHOD.GET) {
-				output.write("HTTP/1.1 200 OK\n".getBytes("US-ASCII"));
-				output.write(("Content-Length: "+request.getURI().length()+"\n").getBytes("US-ASCII"));
-				output.write("\r\n".getBytes("US-ASCII")); // \r\n converts to CRLF
-				output.flush();
+			if (!request.getURI().exists() || request.getURI().isDirectory()) {
 				/*
-				 * XXX: DataInputStream is really slow without a BufferedInputStream in the middle.
-				 * Actually, it's really darn slow anyway.
+				 * Return a File not Found error.
 				 */
-				DataInputStream dataStream = new DataInputStream(new BufferedInputStream(new FileInputStream(request.getURI()), 2048));
-				for (int i = 0; i < request.getURI().length(); i++) {
-					output.write(dataStream.readByte());
-				}
-				output.flush();
-				dataStream.close();
+				closeConnection();
+			}
+			
+			if (request.getMethod() == METHOD.GET) {
+				RequestHandler.handleGet(request, output);
 			}
 			closeConnection();
 		} catch (IOException e) {

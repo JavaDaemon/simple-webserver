@@ -41,9 +41,6 @@ public class ServerUtil {
 			throw new IllegalArgumentException("Unrecognized method");
 		}
 		File file = new File("site"+tokens[1]);
-		if (!file.exists() || file.isDirectory()) {
-			throw new FileNotFoundException("Unable to locate resource: "+file.toString());
-		}
 		String version = tokens[2];
 		return new RequestLine(method, file, version);
 	}
