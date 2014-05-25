@@ -12,7 +12,6 @@ should be easy to get started, and get going.
 
 What's missing?
 ---------------
- * GET-handling.
  * POST-handling.
  * OPTIONS-handling.
  * HEAD-handling.

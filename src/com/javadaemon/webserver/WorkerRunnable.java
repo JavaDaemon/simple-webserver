@@ -1,9 +1,15 @@
 package com.javadaemon.webserver;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+
+import com.javadaemon.webserver.RequestLine.METHOD;
 
 /**
  * Runs on a seperate Thread. This processes the actual request.
@@ -40,18 +46,47 @@ public class WorkerRunnable implements Runnable {
 			}
 			// InputStream is now at headers.
 			
-			// TODO: Check if this is throwing an error. It really might.
-			RequestLine request = ServerUtil.parseRequest(requestData);
+			RequestLine request;
+			try {
+				request = ServerUtil.parseRequest(requestData);
+			} catch (FileNotFoundException e) {
+				closeConnection();
+				return;
+			} catch (IllegalArgumentException e) {
+				closeConnection();
+				return;
+			}
 			
-			/*
-			 * Here, a response could be sent through the OutputStream.
-			 */
-			
-			input.close();
-			output.close();
-			clientSocket.close();
+			if (request.getMethod() == METHOD.GET) {
+				output.write("HTTP/1.1 200 OK\n".getBytes("US-ASCII"));
+				output.write(("Content-Length: "+request.getURI().length()+"\n").getBytes("US-ASCII"));
+				output.write("\r\n".getBytes("US-ASCII")); // \r\n converts to CRLF
+				output.flush();
+				/*
+				 * XXX: DataInputStream is really slow without a BufferedInputStream in the middle.
+				 */
+				DataInputStream dataStream = new DataInputStream(new FileInputStream(request.getURI()));
+				for (int i = 0; i < request.getURI().length(); i++) {
+					output.write(dataStream.readByte());
+					output.flush();
+				}
+				dataStream.close();
+			}
+			closeConnection();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void closeConnection() {
+		try {
+			clientSocket.getInputStream().close();
+			clientSocket.getOutputStream().close();
+			clientSocket.close();
+		} catch (IOException e) {
+			/*
+			 * Flushing failed. Oh well.
+			 */
 		}
 	}
 }

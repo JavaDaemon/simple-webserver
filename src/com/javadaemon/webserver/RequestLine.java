@@ -12,7 +12,6 @@ public class RequestLine {
 	public enum METHOD {
 		GET,
 		POST,
-		UNKNOWN,
 		;
 	}
 	
